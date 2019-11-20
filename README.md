@@ -2,6 +2,9 @@
 
 *This is a BottomSheet with a draggable height like the Google Maps App on Android.*
 
+If you have suggestions or find bugs please write an issue at [github](https://github.com/torbenkeller/expandable_bottom_sheet/issues).
+PR's are welcome.
+
 <table>
   <tr>
     <td><img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_easy.gif"></td>

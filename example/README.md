@@ -2,9 +2,6 @@
 
 This are two examples how to use the ExpandableBottomSheet
 
-If you have suggestions or find bugs please write an issue at [github](https://github.com/torbenkeller/expandable_bottom_sheet/issues).
-PR's are welcome.
-
 Easy Example | Expert Example
 --- | ---
 <img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_easy.gif"> | <img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_expert.gif">

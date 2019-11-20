@@ -1,6 +1,6 @@
 name: expandable_bottom_sheet
 description: This is a BottomSheet with a draggable height like the Google Maps App on Android.
-version: 0.1.1
+version: 0.1.2
 author: Torben Keller <torben.keller.develop@gmail.com>
 homepage: https://github.com/torbenkeller/expandable_bottom_sheet
 

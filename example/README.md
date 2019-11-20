@@ -7,7 +7,7 @@ PR's are welcome.
 
 Easy Example | Expert Example
 --- | ---
-<img src="https://github.com/torbenkeller/expandable_bottom_sheet/raw/assets/expandable_bottom_sheet_easy.gif"> | <img src="https://github.com/torbenkeller/expandable_bottom_sheet/raw/assets/expandable_bottom_sheet_expert.gif">
+<img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_easy.gif"> | <img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_expert.gif">
 
 ## Easy Example
 

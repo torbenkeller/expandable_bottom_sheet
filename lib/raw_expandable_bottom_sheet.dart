@@ -1,38 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-/// [ExpandableBottomSheet] is a BottomSheet with a draggable content like the
+/// [ExpandableBottomSheet] is a BottomSheet with a draggable height like the
 /// Google Maps App on Android.
-///
-///
-/// __Arguments:__
-///
-/// * [expandableContent] is the widget which you can hide and show by dragging.
-///   It has to be a widget with a constant height. It is required for the [ExpandableBottomSheet].
-///
-/// * [background] is the widget behind the [expandableContent] which holds
-///   usually the content of your page. It is required for the [ExpandableBottomSheet].
-///
-/// * [persistentHeader] is a Widget which is on top of the [expandableContent]
-///   and will never be hidden. It is made for a widget which indicates the
-///   user he can expand the content by dragging.
-///
-/// * [persistentFooter] is a widget which is always shown at the bottom. The [expandableContent]
-///   is if it is expanded on top of it so you don't need margin to see all of
-///   your content. You can use it for example for navigation or a menu.
-///
-/// * [persistentContentHeight] is the height of the content which will never
-///   been contracted. It only relates to [expandableContent]. [persistentHeader]
-///   and [persistentFooter] will not be affected by this.
-///
-/// * [animationDurationExtend] is the duration for the animation if you stop
-///   dragging with high speed.
-///
-/// * [animationCurveExpand] is the curve of the animation for expanding
-///   the [expandableContent] if the drag ended with high speed.
-///
-/// * [animationCurveContract] is the curve of the animation for contracting
-///   the [expandableContent] if the drag ended with high speed.
 ///
 /// __Example:__
 ///

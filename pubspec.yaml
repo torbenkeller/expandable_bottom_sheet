@@ -1,8 +1,8 @@
 name: expandable_bottom_sheet
-description: A new Flutter package.
-version: 0.0.1
-author:
-homepage:
+description: This is a BottomSheet with a draggable height like the Google Maps App on Android.
+version: 0.1.0
+author: Torben Keller <torben.keller.develop@gmail.com>
+homepage: https://github.com/torbenkeller/expandable_bottom_sheet
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

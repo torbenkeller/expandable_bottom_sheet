@@ -1,3 +1,7 @@
+## [0.1.3] - 20.11.2019.
+
+* Changed intern structure
+
 ## [0.1.2] - 20.11.2019.
 
 * Readme adjustments

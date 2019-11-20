@@ -1,3 +1,3 @@
 library expandable_bottom_sheet;
 
-export 'raw_expandable_bottom_sheet.dart';
+export 'src/raw_expandable_bottom_sheet.dart';

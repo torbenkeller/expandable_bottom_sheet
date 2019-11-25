@@ -122,6 +122,7 @@ class _ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   double _maxOffset = 0;
 
   double _animationMinOffset = 0;
+  bool _first = true;
 
   @override
   void initState() {
@@ -137,6 +138,10 @@ class _ExpandableBottomSheetState extends State<ExpandableBottomSheet>
 
   @override
   Widget build(BuildContext context) {
+    if(!_first)
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
+    _first = false;
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -187,13 +192,6 @@ class _ExpandableBottomSheetState extends State<ExpandableBottomSheet>
             key: _footerKey, child: widget.persistentFooter ?? Container()),
       ],
     );
-  }
-
-  @override
-  void didUpdateWidget(ExpandableBottomSheet oldWidget) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
-    super.didUpdateWidget(oldWidget);
   }
 
   void _afterUpdateWidgetBuild(bool isFirstBuild) {

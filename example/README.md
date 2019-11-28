@@ -33,6 +33,28 @@ ExpandableBottomSheet(
 );
 ```
 
+## Call expand, contract or status programmatically
+
+```dart
+...
+GlobalKey<ExpandableBottomSheetState> key = new GlobalKey();
+...
+
+@override
+Widget build(BuildContext context) {
+  return ExpandableBottomSheet(
+    key: key
+    ...
+  );
+}
+
+void expand() => key.currentState.expand();
+
+void contract() key.currentState.contract();
+
+ExpansionStatus status() => key.currentState.expansionStatus;
+```
+
 ## Expert Example
 
 ```dart
@@ -42,16 +64,21 @@ class ExampleExpert extends StatefulWidget {
 }
 
 class _ExampleExpertState extends State<ExampleExpert> {
-  int contentAmount = 0;
+  GlobalKey<ExpandableBottomSheetState> key = new GlobalKey();
+  int _contentAmount = 0;
+  ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('ExpandableBottomSheet')),
-
-        //example starts
+        appBar: AppBar(
+          title: Text(_expansionStatus.toString()),
+        ),
         body: ExpandableBottomSheet(
+          //use the key to get access to expand(), contract() and expansionStatus
+          key: key,
+
           //optional
           //callbacks (use it for example for an animation in your header)
           onIsContractedCallback: () => print('contracted'),
@@ -102,7 +129,7 @@ class _ExampleExpertState extends State<ExampleExpert> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  for (int i = 0; i < contentAmount; i++)
+                  for (int i = 0; i < _contentAmount; i++)
                     Container(
                       height: 50,
                       color: Colors.red[((i % 8) + 1) * 100],
@@ -122,24 +149,40 @@ class _ExampleExpertState extends State<ExampleExpert> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                RaisedButton(
-                  child: Icon(Icons.add),
+                IconButton(
+                  icon: Icon(Icons.add),
                   onPressed: () => setState(() {
-                    contentAmount++;
+                    _contentAmount++;
                   }),
                 ),
-                RaisedButton(
-                  child: Icon(Icons.remove),
+                IconButton(
+                  icon: Icon(Icons.arrow_upward),
                   onPressed: () => setState(() {
-                    if (contentAmount > 0) contentAmount--;
+                    key.currentState.expand();
+                  }),
+                ),
+                IconButton(
+                  icon: Icon(Icons.cloud),
+                  onPressed: () => setState(() {
+                    _expansionStatus = key.currentState.expansionStatus;
+                  }),
+                ),
+                IconButton(
+                  icon: Icon(Icons.arrow_downward),
+                  onPressed: () => setState(() {
+                    key.currentState.contract();
+                  }),
+                ),
+                IconButton(
+                  icon: Icon(Icons.remove),
+                  onPressed: () => setState(() {
+                    if (_contentAmount > 0) _contentAmount--;
                   }),
                 ),
               ],
             ),
           ),
         ),
-
-        //example ends
       ),
     );
   }

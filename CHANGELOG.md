@@ -1,3 +1,9 @@
+## [0.2.0] - 28.11.2019.
+
+* Added functions to expand or contract the content from outside.
+
+* Fixes the bugs from calling
+
 ## [0.1.4] - 20.11.2019.
 
 * Bug fix: The content height hasn't updated properly.

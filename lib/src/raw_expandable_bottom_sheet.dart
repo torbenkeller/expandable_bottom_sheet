@@ -241,13 +241,6 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
     }
   }
 
-  @override
-  void didUpdateWidget(ExpandableBottomSheet oldWidget) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
-    super.didUpdateWidget(oldWidget);
-  }
-
   void _afterUpdateWidgetBuild(bool isFirstBuild) {
     double headerHeight = _headerKey.currentContext.size.height;
     double footerHeight = _footerKey.currentContext.size.height;

@@ -130,12 +130,14 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
 
   /// Expands the content of the widget.
   void expand() {
+    _afterUpdateWidgetBuild(false);
     _callCallbacks = true;
     _animateToTop();
   }
 
   /// Contracts the content of the widget.
   void contract() {
+    _afterUpdateWidgetBuild(false);
     _callCallbacks = true;
     _animateToBottom();
   }
@@ -237,6 +239,13 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
           widget.onIsContractedCallback();
       }
     }
+  }
+
+  @override
+  void didUpdateWidget(ExpandableBottomSheet oldWidget) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
+    super.didUpdateWidget(oldWidget);
   }
 
   void _afterUpdateWidgetBuild(bool isFirstBuild) {
@@ -403,9 +412,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   }
 }
 
-
 /// The status of the expandable content.
-enum ExpansionStatus{
+enum ExpansionStatus {
   expanded,
   middle,
   contracted,

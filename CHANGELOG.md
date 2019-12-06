@@ -1,3 +1,7 @@
+## [0.2.1] - 06.12.2019.
+
+* Now Expands Method works even if the content updates its height without rebuilding the ExpandableBottomSheet.
+
 ## [0.2.0] - 28.11.2019.
 
 * Added functions to expand or contract the content from outside.

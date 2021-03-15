@@ -12,9 +12,6 @@ PR's are welcome.
   </tr>
 </table>
 
-## How to use it?
-Just look into the [example Tab](https://pub.dev/packages/expandable_bottom_sheet#-example-tab-)
-
 ## Arguments
 
 Argument | Description
@@ -34,10 +31,6 @@ onIsContractedCallback | This will be executed if the extend reaches its minimum
 # Examples
 
 This are two examples how to use the ExpandableBottomSheet
-
-Easy Example | Expert Example
---- | ---
-<img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_easy.gif"> | <img src="https://raw.githubusercontent.com/torbenkeller/expandable_bottom_sheet/master/assets/expandable_bottom_sheet_expert.gif">
 
 ## Import Library
 

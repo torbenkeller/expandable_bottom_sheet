@@ -77,7 +77,7 @@ class ExpandableBottomSheet extends StatefulWidget {
   final Function()? onIsContractedCallback;
 
   /// [enableToggle] will enable tap to toggle option on header.
-  final bool? enableToggle;
+  final bool enableToggle;
 
   /// Creates the [ExpandableBottomSheet].
   ///
@@ -236,11 +236,11 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   }
 
   void _afterUpdateWidgetBuild(bool isFirstBuild) {
-    var headerHeight = _headerKey.currentContext!.size!.height;
-    var footerHeight = _footerKey.currentContext!.size!.height;
-    var contentHeight = _contentKey.currentContext!.size!.height;
+    double headerHeight = _headerKey.currentContext!.size!.height;
+    double footerHeight = _footerKey.currentContext!.size!.height;
+    double contentHeight = _contentKey.currentContext!.size!.height;
 
-    var checkedPersistentContentHeight = (widget.persistentContentHeight < contentHeight)
+    double checkedPersistentContentHeight = (widget.persistentContentHeight < contentHeight)
         ? widget.persistentContentHeight
         : contentHeight;
 
@@ -281,11 +281,10 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   }
 
   void _toggle() {
-    if (widget.enableToggle!) {
+    if (widget.enableToggle) {
       if (expansionStatus == ExpansionStatus.expanded) {
         _animateToBottom();
       }
-
       if (expansionStatus == ExpansionStatus.contracted) {
         _animateToTop();
       }
@@ -304,8 +303,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
 
   void _dragUpdate(DragUpdateDetails details) {
     if (!_useDrag) return;
-    var offset = details.localPosition.dy;
-    var newOffset = _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
+    double offset = details.localPosition.dy;
+    double newOffset = _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
     if (_minOffset <= newOffset && _maxOffset >= newOffset) {
       setState(() {
         _positionOffset = newOffset;

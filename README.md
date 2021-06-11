@@ -27,6 +27,8 @@ animationCurveExpand | This is the curve of the animation for expanding the `exp
 animationCurveContract | This is the curve of the animation for contracting the `expandableContent` if the drag ended with high speed.
 onIsExtendedCallback | This will be executed if the extend reaches its maximum.
 onIsContractedCallback | This will be executed if the extend reaches its minimum.
+enableToggle | This will enable tap to toggle option on header.
+
 
 # Examples
 

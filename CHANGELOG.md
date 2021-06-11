@@ -1,3 +1,7 @@
+## [1.1.0] - 11.06.2021.
+
+* Added `enableToggle`.
+
 ## [1.0.0] - 13.03.2021.
 
 * Migration to null - safety

@@ -283,9 +283,11 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   void _toggle() {
     if (widget.enableToggle) {
       if (expansionStatus == ExpansionStatus.expanded) {
+        _callCallbacks = true;
         _animateToBottom();
       }
       if (expansionStatus == ExpansionStatus.contracted) {
+        _callCallbacks = true;
         _animateToTop();
       }
     }

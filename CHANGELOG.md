@@ -1,3 +1,7 @@
+## [1.1.1] - 19.08.2021.
+
+* Fixed ´onIsExtendedCallback´ and ´onIsContractedCallback´ not called on toggle.
+
 ## [1.1.0] - 11.06.2021.
 
 * Added `enableToggle`.

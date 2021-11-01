@@ -67,7 +67,7 @@ ExpandableBottomSheet(
 );
 ```
 
-## Call expand, contract or status programmatically
+## Call expand, contract, toggle dragging or status programmatically
 
 ```dart
 ...
@@ -81,6 +81,10 @@ Widget build(BuildContext context) {
     ...
   );
 }
+
+set draggable(bool draggable) => _key.currentState?.draggable = draggable;
+
+bool get draggable => _key.currentState!.draggable;
 
 void expand() => key.currentState.expand();
 

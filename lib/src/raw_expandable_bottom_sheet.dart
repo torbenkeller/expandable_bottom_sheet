@@ -158,6 +158,7 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   @override
   void initState() {
     super.initState();
+    draggable = widget.draggable;
     _controller = AnimationController(
       vsync: this,
       lowerBound: 0.0,

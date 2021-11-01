@@ -79,6 +79,9 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// [enableToggle] will enable tap to toggle option on header.
   final bool enableToggle;
 
+  /// [draggable] will allow the user to drag the [ExpandableBottomSheet].
+  final bool draggable;
+
   /// Creates the [ExpandableBottomSheet].
   ///
   /// [persistentContentHeight] has to be greater 0.
@@ -96,6 +99,7 @@ class ExpandableBottomSheet extends StatefulWidget {
     this.onIsExtendedCallback,
     this.onIsContractedCallback,
     this.enableToggle = false,
+    this.draggable = true,
   })  : assert(persistentContentHeight >= 0),
         super(key: key);
 
@@ -125,6 +129,9 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
 
   bool _useDrag = true;
   bool _callCallbacks = false;
+
+  // Allows dragging the content of the widget.
+  late bool draggable;
 
   /// Expands the content of the widget.
   void expand() {
@@ -192,9 +199,9 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 },
                 child: GestureDetector(
                   onTap: _toggle,
-                  onVerticalDragDown: _dragDown,
-                  onVerticalDragUpdate: _dragUpdate,
-                  onVerticalDragEnd: _dragEnd,
+                  onVerticalDragDown: draggable ? _dragDown : (_) {},
+                  onVerticalDragUpdate: draggable ? _dragUpdate : (_) {},
+                  onVerticalDragEnd: draggable ? _dragEnd : (_) {},
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[

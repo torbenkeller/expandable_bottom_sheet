@@ -5,6 +5,9 @@ class ExpandableBottomSheetController {
   late final ExpandableBottomSheetState _state;
 
   /// Hooks the [ExpandableBottomSheetController] to the [ExpandableBottomSheet].
+  ///
+  /// If not set, the [ExpandableBottomSheetController] will throw a
+  /// [LateInizializationError] when used.
   void _setState(ExpandableBottomSheetState state) {
     _state = state;
   }

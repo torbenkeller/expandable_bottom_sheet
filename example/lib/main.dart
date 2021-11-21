@@ -22,7 +22,9 @@ class ExampleExpert extends StatefulWidget {
 }
 
 class _ExampleExpertState extends State<ExampleExpert> {
-  GlobalKey<ExpandableBottomSheetState> key = new GlobalKey();
+  final ExpandableBottomSheetController _controller =
+      ExpandableBottomSheetController();
+
   int _contentAmount = 0;
   ExpansionStatus _expansionStatus = ExpansionStatus.contracted;
 
@@ -34,8 +36,7 @@ class _ExampleExpertState extends State<ExampleExpert> {
           title: Text(_expansionStatus.toString()),
         ),
         body: ExpandableBottomSheet(
-          //use the key to get access to expand(), contract() and expansionStatus
-          key: key,
+          controller: _controller,
 
           //optional
           //callbacks (use it for example for an animation in your header)
@@ -120,19 +121,19 @@ class _ExampleExpertState extends State<ExampleExpert> {
                 IconButton(
                   icon: Icon(Icons.arrow_upward),
                   onPressed: () => setState(() {
-                    key.currentState!.expand();
+                    _controller.expand();
                   }),
                 ),
                 IconButton(
                   icon: Icon(Icons.cloud),
                   onPressed: () => setState(() {
-                    _expansionStatus = key.currentState!.expansionStatus;
+                    _expansionStatus = _controller.expansionStatus;
                   }),
                 ),
                 IconButton(
                   icon: Icon(Icons.arrow_downward),
                   onPressed: () => setState(() {
-                    key.currentState!.contract();
+                    _controller.contract();
                   }),
                 ),
                 IconButton(

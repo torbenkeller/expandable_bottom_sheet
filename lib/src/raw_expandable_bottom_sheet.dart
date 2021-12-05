@@ -79,8 +79,8 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// [enableToggle] will enable tap to toggle option on header.
   final bool enableToggle;
 
-  /// [draggable] will allow the user to drag the [ExpandableBottomSheet].
-  final bool draggable;
+  /// [isDraggable] will make the [ExpandableBottomSheet] draggable by the user or not.
+  final bool isDraggable;
 
   /// Creates the [ExpandableBottomSheet].
   ///
@@ -99,7 +99,7 @@ class ExpandableBottomSheet extends StatefulWidget {
     this.onIsExtendedCallback,
     this.onIsContractedCallback,
     this.enableToggle = false,
-    this.draggable = true,
+    this.isDraggable = true,
   })  : assert(persistentContentHeight >= 0),
         super(key: key);
 
@@ -130,9 +130,6 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   bool _useDrag = true;
   bool _callCallbacks = false;
 
-  // Allows dragging the content of the widget.
-  late bool draggable;
-
   /// Expands the content of the widget.
   void expand() {
     _afterUpdateWidgetBuild(false);
@@ -158,21 +155,18 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   @override
   void initState() {
     super.initState();
-    draggable = widget.draggable;
     _controller = AnimationController(
       vsync: this,
       lowerBound: 0.0,
       upperBound: 1.0,
     );
     _controller.addStatusListener(_handleAnimationStatusUpdate);
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
+    WidgetsBinding.instance!.addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
+    WidgetsBinding.instance!.addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -188,8 +182,7 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 animation: _controller,
                 builder: (_, Widget? child) {
                   if (_controller.isAnimating) {
-                    _positionOffset = _animationMinOffset +
-                        _controller.value * _draggableHeight;
+                    _positionOffset = _animationMinOffset + _controller.value * _draggableHeight;
                   }
                   return Positioned(
                     top: _positionOffset,
@@ -200,15 +193,13 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 },
                 child: GestureDetector(
                   onTap: _toggle,
-                  onVerticalDragDown: draggable ? _dragDown : (_) {},
-                  onVerticalDragUpdate: draggable ? _dragUpdate : (_) {},
-                  onVerticalDragEnd: draggable ? _dragEnd : (_) {},
+                  onVerticalDragDown: widget.isDraggable ? _dragDown : (_) {},
+                  onVerticalDragUpdate: widget.isDraggable ? _dragUpdate : (_) {},
+                  onVerticalDragEnd: widget.isDraggable ? _dragEnd : (_) {},
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Container(
-                          key: _headerKey,
-                          child: widget.persistentHeader ?? Container()),
+                      Container(key: _headerKey, child: widget.persistentHeader ?? Container()),
                       Container(
                         key: _contentKey,
                         child: widget.expandableContent,
@@ -220,8 +211,7 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
             ],
           ),
         ),
-        Container(
-            key: _footerKey, child: widget.persistentFooter ?? Container()),
+        Container(key: _footerKey, child: widget.persistentFooter ?? Container()),
       ],
     );
   }
@@ -254,17 +244,13 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
     double footerHeight = _footerKey.currentContext!.size!.height;
     double contentHeight = _contentKey.currentContext!.size!.height;
 
-    double checkedPersistentContentHeight =
-        (widget.persistentContentHeight < contentHeight)
-            ? widget.persistentContentHeight
-            : contentHeight;
+    double checkedPersistentContentHeight = (widget.persistentContentHeight < contentHeight)
+        ? widget.persistentContentHeight
+        : contentHeight;
 
-    _minOffset =
-        context.size!.height - headerHeight - contentHeight - footerHeight;
-    _maxOffset = context.size!.height -
-        headerHeight -
-        footerHeight -
-        checkedPersistentContentHeight;
+    _minOffset = context.size!.height - headerHeight - contentHeight - footerHeight;
+    _maxOffset =
+        context.size!.height - headerHeight - footerHeight - checkedPersistentContentHeight;
 
     if (!isFirstBuild) {
       _positionOutOfBounds();
@@ -324,8 +310,7 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   void _dragUpdate(DragUpdateDetails details) {
     if (!_useDrag) return;
     double offset = details.localPosition.dy;
-    double newOffset =
-        _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
+    double newOffset = _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
     if (_minOffset <= newOffset && _maxOffset >= newOffset) {
       setState(() {
         _positionOffset = newOffset;
@@ -356,12 +341,10 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
         _callCallbacks = true;
         _animateToBottom();
       } else {
-        if (_positionOffset == _maxOffset &&
-            widget.onIsContractedCallback != null) {
+        if (_positionOffset == _maxOffset && widget.onIsContractedCallback != null) {
           widget.onIsContractedCallback!();
         }
-        if (_positionOffset == _minOffset &&
-            widget.onIsExtendedCallback != null) {
+        if (_positionOffset == _minOffset && widget.onIsExtendedCallback != null) {
           widget.onIsExtendedCallback!();
         }
       }

@@ -39,10 +39,20 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// usually the content of your page. It is required for the [ExpandableBottomSheet].
   final Widget background;
 
+  @Deprecated(
+      ''' Your header widget should be part of `expandableContent`. Then you set the height of your header widget to `persistentContentHeight`.
+  This will be removed in version 2.0.0.
+  ''')
+
   /// [persistentHeader] is a Widget which is on top of the [expandableContent]
   /// and will never be hidden. It is made for a widget which indicates the
   /// user he can expand the content by dragging.
   final Widget? persistentHeader;
+
+  @Deprecated(
+      ''' The persistentFooter should not be part of the ExpandableBottomSheet. Rather define it outside of ExpandableBottomSheet.
+  This will be removed in version 2.0.0.
+  ''')
 
   /// [persistentFooter] is a widget which is always shown at the bottom. The [expandableContent]
   /// is if it is expanded on top of it so you don't need margin to see all of
@@ -161,12 +171,14 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
       upperBound: 1.0,
     );
     _controller.addStatusListener(_handleAnimationStatusUpdate);
-    WidgetsBinding.instance!.addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!.addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -182,7 +194,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 animation: _controller,
                 builder: (_, Widget? child) {
                   if (_controller.isAnimating) {
-                    _positionOffset = _animationMinOffset + _controller.value * _draggableHeight;
+                    _positionOffset = _animationMinOffset +
+                        _controller.value * _draggableHeight;
                   }
                   return Positioned(
                     top: _positionOffset,
@@ -194,12 +207,15 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 child: GestureDetector(
                   onTap: _toggle,
                   onVerticalDragDown: widget.isDraggable ? _dragDown : (_) {},
-                  onVerticalDragUpdate: widget.isDraggable ? _dragUpdate : (_) {},
+                  onVerticalDragUpdate:
+                      widget.isDraggable ? _dragUpdate : (_) {},
                   onVerticalDragEnd: widget.isDraggable ? _dragEnd : (_) {},
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Container(key: _headerKey, child: widget.persistentHeader ?? Container()),
+                      Container(
+                          key: _headerKey,
+                          child: widget.persistentHeader ?? Container()),
                       Container(
                         key: _contentKey,
                         child: widget.expandableContent,
@@ -211,7 +227,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
             ],
           ),
         ),
-        Container(key: _footerKey, child: widget.persistentFooter ?? Container()),
+        Container(
+            key: _footerKey, child: widget.persistentFooter ?? Container()),
       ],
     );
   }
@@ -244,13 +261,17 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
     double footerHeight = _footerKey.currentContext!.size!.height;
     double contentHeight = _contentKey.currentContext!.size!.height;
 
-    double checkedPersistentContentHeight = (widget.persistentContentHeight < contentHeight)
-        ? widget.persistentContentHeight
-        : contentHeight;
+    double checkedPersistentContentHeight =
+        (widget.persistentContentHeight < contentHeight)
+            ? widget.persistentContentHeight
+            : contentHeight;
 
-    _minOffset = context.size!.height - headerHeight - contentHeight - footerHeight;
-    _maxOffset =
-        context.size!.height - headerHeight - footerHeight - checkedPersistentContentHeight;
+    _minOffset =
+        context.size!.height - headerHeight - contentHeight - footerHeight;
+    _maxOffset = context.size!.height -
+        headerHeight -
+        footerHeight -
+        checkedPersistentContentHeight;
 
     if (!isFirstBuild) {
       _positionOutOfBounds();
@@ -310,7 +331,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   void _dragUpdate(DragUpdateDetails details) {
     if (!_useDrag) return;
     double offset = details.localPosition.dy;
-    double newOffset = _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
+    double newOffset =
+        _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
     if (_minOffset <= newOffset && _maxOffset >= newOffset) {
       setState(() {
         _positionOffset = newOffset;
@@ -341,10 +363,12 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
         _callCallbacks = true;
         _animateToBottom();
       } else {
-        if (_positionOffset == _maxOffset && widget.onIsContractedCallback != null) {
+        if (_positionOffset == _maxOffset &&
+            widget.onIsContractedCallback != null) {
           widget.onIsContractedCallback!();
         }
-        if (_positionOffset == _minOffset && widget.onIsExtendedCallback != null) {
+        if (_positionOffset == _minOffset &&
+            widget.onIsExtendedCallback != null) {
           widget.onIsExtendedCallback!();
         }
       }

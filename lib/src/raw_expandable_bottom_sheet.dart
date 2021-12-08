@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// TODO: Consider imports instead of parts.
 part 'expandable_bottom_sheet_controller.dart';
+part 'expandable_bottom_sheet_drag_handler.dart';
+part 'expansion_status.dart';
 
 /// [ExpandableBottomSheet] is a BottomSheet with a draggable height like the
 /// Google Maps App on Android.
@@ -33,6 +36,20 @@ part 'expandable_bottom_sheet_controller.dart';
 /// );
 /// ```
 class ExpandableBottomSheet extends StatefulWidget {
+  /// Creates the [ExpandableBottomSheet].
+  ///
+  /// [persistentContentHeight] has to be greater 0.
+  const ExpandableBottomSheet({
+    Key? key,
+    required this.expandableContent,
+    required this.background,
+    this.persistentHeader,
+    this.persistentFooter,
+    this.persistentContentHeight = 0.0,
+    this.controller,
+  })  : assert(persistentContentHeight >= 0),
+        super(key: key);
+
   /// [expandableContent] is the widget which you can hide and show by dragging.
   /// It has to be a widget with a constant height. It is required for the [ExpandableBottomSheet].
   final Widget expandableContent;
@@ -56,58 +73,8 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// and [persistentFooter] will not be affected by this.
   final double persistentContentHeight;
 
-  /// [animationDurationExtend] is the duration for the animation if you stop
-  /// dragging with high speed.
-  final Duration animationDurationExtend;
-
-  /// [animationDurationContract] is the duration for the animation to bottom
-  /// if you stop dragging with high speed. If it is `null` [animationDurationExtend] will be used.
-  final Duration animationDurationContract;
-
-  /// [animationCurveExpand] is the curve of the animation for expanding
-  /// the [expandableContent] if the drag ended with high speed.
-  final Curve animationCurveExpand;
-
-  /// [animationCurveContract] is the curve of the animation for contracting
-  /// the [expandableContent] if the drag ended with high speed.
-  final Curve animationCurveContract;
-
-  /// [onIsExtendedCallback] will be executed if the extend reaches its maximum.
-  final Function()? onIsExtendedCallback;
-
-  /// [onIsContractedCallback] will be executed if the extend reaches its minimum.
-  final Function()? onIsContractedCallback;
-
-  /// [enableToggle] will enable tap to toggle option on header.
-  final bool enableToggle;
-
-  /// [draggable] will allow the user to drag the [ExpandableBottomSheet].
-  final bool draggable;
-
   // Use to control the [ExpandableBottomSheet].
   final ExpandableBottomSheetController? controller;
-
-  /// Creates the [ExpandableBottomSheet].
-  ///
-  /// [persistentContentHeight] has to be greater 0.
-  const ExpandableBottomSheet({
-    Key? key,
-    required this.expandableContent,
-    required this.background,
-    this.persistentHeader,
-    this.persistentFooter,
-    this.persistentContentHeight = 0.0,
-    this.animationCurveExpand = Curves.ease,
-    this.animationCurveContract = Curves.ease,
-    this.animationDurationExtend = const Duration(milliseconds: 250),
-    this.animationDurationContract = const Duration(milliseconds: 250),
-    this.onIsExtendedCallback,
-    this.onIsContractedCallback,
-    this.enableToggle = false,
-    this.draggable = true,
-    this.controller,
-  })  : assert(persistentContentHeight >= 0),
-        super(key: key);
 
   @override
   ExpandableBottomSheetState createState() => ExpandableBottomSheetState();
@@ -119,64 +86,38 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   final GlobalKey _headerKey = GlobalKey(debugLabel: 'headerKey');
   final GlobalKey _footerKey = GlobalKey(debugLabel: 'footerKey');
 
-  late AnimationController _animationController;
-
-  double _draggableHeight = 0;
-  double? _positionOffset;
-  double _startOffsetAtDragDown = 0;
-  double? _startPositionAtDragDown = 0;
-
-  double _minOffset = 0;
-  double _maxOffset = 0;
-
-  double _animationMinOffset = 0;
-
-  AnimationStatus _oldStatus = AnimationStatus.dismissed;
-
-  bool _useDrag = true;
-  bool _callCallbacks = false;
-
-  late bool _draggable;
-
-  void _expand() {
-    _afterUpdateWidgetBuild(false);
-    _callCallbacks = true;
-    _animateToTop();
-  }
-
-  void _contract() {
-    _afterUpdateWidgetBuild(false);
-    _callCallbacks = true;
-    _animateToBottom();
-  }
-
-  ExpansionStatus get _expansionStatus {
-    if (_positionOffset == null) return ExpansionStatus.contracted;
-    if (_positionOffset == _maxOffset) return ExpansionStatus.contracted;
-    if (_positionOffset == _minOffset) return ExpansionStatus.expanded;
-    return ExpansionStatus.middle;
-  }
+  late ExpandableBottomSheetController _controller;
+  late ExpandableBottomSheetDragHandler _dragHandler;
 
   @override
   void initState() {
     super.initState();
-    _draggable = widget.draggable;
-    _animationController = AnimationController(
-      vsync: this,
-      lowerBound: 0.0,
-      upperBound: 1.0,
-    );
-    _animationController.addStatusListener(_handleAnimationStatusUpdate);
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
 
-    widget.controller?._setState(this);
+    _controller = ExpandableBottomSheetController(
+      vsync: this,
+    )..init();
+
+    _dragHandler = ExpandableBottomSheetDragHandler(
+      controller: _controller,
+    );
+
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) => _measure(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!
-        .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
+    WidgetsBinding.instance!.addPostFrameCallback(
+      (_) => _checkPositionOutOfBounds(),
+    );
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
@@ -189,30 +130,35 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 child: widget.background,
               ),
               AnimatedBuilder(
-                animation: _animationController,
+                animation: _controller,
                 builder: (_, Widget? child) {
-                  if (_animationController.isAnimating) {
-                    _positionOffset = _animationMinOffset +
-                        _animationController.value * _draggableHeight;
+                  // TODO: Refactor this conditional statement.
+                  if (_controller.isAnimating) {
+                    _controller._positionOffset =
+                        _controller._animationMinOffset +
+                            _controller.value * _controller._draggableHeight;
                   }
+
                   return Positioned(
-                    top: _positionOffset,
+                    top: _controller._positionOffset,
                     right: 0.0,
                     left: 0.0,
                     child: child!,
                   );
                 },
                 child: GestureDetector(
-                  onTap: _toggle,
-                  onVerticalDragDown: _draggable ? _dragDown : (_) {},
-                  onVerticalDragUpdate: _draggable ? _dragUpdate : (_) {},
-                  onVerticalDragEnd: _draggable ? _dragEnd : (_) {},
+                  onTap: _controller.toggle,
+                  onVerticalDragDown: _dragHandler._dragDown,
+                  onVerticalDragUpdate: _dragHandler._dragUpdate,
+                  onVerticalDragEnd: _dragHandler._dragEnd,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Container(
-                          key: _headerKey,
-                          child: widget.persistentHeader ?? Container()),
+                        key: _headerKey,
+                        child:
+                            widget.persistentHeader ?? const SizedBox.shrink(),
+                      ),
                       Container(
                         key: _contentKey,
                         child: widget.expandableContent,
@@ -225,35 +171,14 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
           ),
         ),
         Container(
-            key: _footerKey, child: widget.persistentFooter ?? Container()),
+          key: _footerKey,
+          child: widget.persistentFooter ?? const SizedBox.shrink(),
+        ),
       ],
     );
   }
 
-  void _handleAnimationStatusUpdate(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      if (_oldStatus == AnimationStatus.forward) {
-        setState(() {
-          _draggableHeight = _maxOffset - _minOffset;
-          _positionOffset = _minOffset;
-        });
-        if (widget.onIsExtendedCallback != null && _callCallbacks) {
-          widget.onIsExtendedCallback!();
-        }
-      }
-      if (_oldStatus == AnimationStatus.reverse) {
-        setState(() {
-          _draggableHeight = _maxOffset - _minOffset;
-          _positionOffset = _maxOffset;
-        });
-        if (widget.onIsContractedCallback != null && _callCallbacks) {
-          widget.onIsContractedCallback!();
-        }
-      }
-    }
-  }
-
-  void _afterUpdateWidgetBuild(bool isFirstBuild) {
+  void _measure() {
     double headerHeight = _headerKey.currentContext!.size!.height;
     double footerHeight = _footerKey.currentContext!.size!.height;
     double contentHeight = _contentKey.currentContext!.size!.height;
@@ -263,180 +188,20 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
             ? widget.persistentContentHeight
             : contentHeight;
 
-    _minOffset =
+    _controller._minOffset =
         context.size!.height - headerHeight - contentHeight - footerHeight;
-    _maxOffset = context.size!.height -
+    _controller._maxOffset = context.size!.height -
         headerHeight -
         footerHeight -
         checkedPersistentContentHeight;
 
-    if (!isFirstBuild) {
-      _positionOutOfBounds();
-    } else {
-      setState(() {
-        _positionOffset = _maxOffset;
-        _draggableHeight = _maxOffset - _minOffset;
-      });
-    }
+    _controller._positionOffset = _controller._maxOffset;
+    _controller._draggableHeight =
+        _controller._maxOffset - _controller._minOffset;
   }
 
-  void _positionOutOfBounds() {
-    if (_positionOffset! < _minOffset) {
-      //the extend is larger than contentHeight
-      _callCallbacks = false;
-      _animateToMin();
-    } else {
-      if (_positionOffset! > _maxOffset) {
-        //the extend is smaller than persistentContentHeight
-        _callCallbacks = false;
-        _animateToMax();
-      } else {
-        _draggableHeight = _maxOffset - _minOffset;
-      }
-    }
+  void _checkPositionOutOfBounds() {
+    _measure(); // TODO: Why do we require to measure?
+    _controller._onPositionOutOfBounds();
   }
-
-  void _animateOnIsAnimating() {
-    if (_animationController.isAnimating) {
-      _animationController.stop();
-    }
-  }
-
-  void _toggle() {
-    if (widget.enableToggle) {
-      if (_expansionStatus == ExpansionStatus.expanded) {
-        _callCallbacks = true;
-        _animateToBottom();
-      }
-      if (_expansionStatus == ExpansionStatus.contracted) {
-        _callCallbacks = true;
-        _animateToTop();
-      }
-    }
-  }
-
-  void _dragDown(DragDownDetails details) {
-    if (_animationController.isAnimating) {
-      _useDrag = false;
-    } else {
-      _useDrag = true;
-      _startOffsetAtDragDown = details.localPosition.dy;
-      _startPositionAtDragDown = _positionOffset;
-    }
-  }
-
-  void _dragUpdate(DragUpdateDetails details) {
-    if (!_useDrag) return;
-    double offset = details.localPosition.dy;
-    double newOffset =
-        _startPositionAtDragDown! + offset - _startOffsetAtDragDown;
-    if (_minOffset <= newOffset && _maxOffset >= newOffset) {
-      setState(() {
-        _positionOffset = newOffset;
-      });
-    } else {
-      if (_minOffset > newOffset) {
-        setState(() {
-          _positionOffset = _minOffset;
-        });
-      }
-      if (_maxOffset < newOffset) {
-        setState(() {
-          _positionOffset = _maxOffset;
-        });
-      }
-    }
-  }
-
-  void _dragEnd(DragEndDetails details) {
-    if (_startPositionAtDragDown == _positionOffset || !_useDrag) return;
-    if (details.primaryVelocity! < -250) {
-      //drag up ended with high speed
-      _callCallbacks = true;
-      _animateToTop();
-    } else {
-      if (details.primaryVelocity! > 250) {
-        //drag down ended with high speed
-        _callCallbacks = true;
-        _animateToBottom();
-      } else {
-        if (_positionOffset == _maxOffset &&
-            widget.onIsContractedCallback != null) {
-          widget.onIsContractedCallback!();
-        }
-        if (_positionOffset == _minOffset &&
-            widget.onIsExtendedCallback != null) {
-          widget.onIsExtendedCallback!();
-        }
-      }
-    }
-  }
-
-  void _animateToTop() {
-    _animateOnIsAnimating();
-    _animationController.value =
-        (_positionOffset! - _minOffset) / _draggableHeight;
-    _animationMinOffset = _minOffset;
-    _oldStatus = AnimationStatus.forward;
-    _animationController.animateTo(
-      0.0,
-      duration: widget.animationDurationExtend,
-      curve: widget.animationCurveExpand,
-    );
-  }
-
-  void _animateToBottom() {
-    _animateOnIsAnimating();
-
-    _animationController.value =
-        (_positionOffset! - _minOffset) / _draggableHeight;
-    _animationMinOffset = _minOffset;
-    _oldStatus = AnimationStatus.reverse;
-    _animationController.animateTo(
-      1.0,
-      duration: widget.animationDurationContract,
-      curve: widget.animationCurveContract,
-    );
-  }
-
-  void _animateToMax() {
-    _animateOnIsAnimating();
-
-    _animationController.value = 1.0;
-    _draggableHeight = _positionOffset! - _maxOffset;
-    _animationMinOffset = _maxOffset;
-    _oldStatus = AnimationStatus.reverse;
-    _animationController.animateTo(
-      0.0,
-      duration: widget.animationDurationExtend,
-      curve: widget.animationCurveExpand,
-    );
-  }
-
-  void _animateToMin() {
-    _animateOnIsAnimating();
-
-    _animationController.value = 1.0;
-    _draggableHeight = _positionOffset! - _minOffset;
-    _animationMinOffset = _minOffset;
-    _oldStatus = AnimationStatus.forward;
-    _animationController.animateTo(
-      0.0,
-      duration: widget.animationDurationContract,
-      curve: widget.animationCurveContract,
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-}
-
-/// The status of the expandable content.
-enum ExpansionStatus {
-  expanded,
-  middle,
-  contracted,
 }

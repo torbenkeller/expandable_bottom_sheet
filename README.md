@@ -1,4 +1,5 @@
 # ExpandableBottomSheet
+[![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
 
 *This is a BottomSheet with a draggable height like the Google Maps App on Android.*
 

@@ -101,6 +101,10 @@ class _ExampleExpertState extends State<ExampleExpert> {
           // This will enable tap to toggle option on header.
           enableToggle: true,
 
+          // optional
+          // This will make the sheet draggable or not
+          isDraggable: true,
+
           //optional
           //This is a widget aligned to the bottom of the screen and stays there.
           //You can use this for example for navigation.

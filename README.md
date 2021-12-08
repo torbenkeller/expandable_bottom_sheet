@@ -29,6 +29,7 @@ animationCurveContract | This is the curve of the animation for contracting the 
 onIsExtendedCallback | This will be executed if the extend reaches its maximum.
 onIsContractedCallback | This will be executed if the extend reaches its minimum.
 enableToggle | This will enable tap to toggle option on header.
+isDraggable | This will make the `ExpandableBottomSheet` draggable by the user or not.
 
 
 # Examples
@@ -68,7 +69,7 @@ ExpandableBottomSheet(
 );
 ```
 
-## Call expand, contract, toggle dragging or status programmatically
+## Call expand, contract, or status programmatically
 
 ```dart
 ...
@@ -82,10 +83,6 @@ Widget build(BuildContext context) {
     ...
   );
 }
-
-set draggable(bool draggable) => _key.currentState?.draggable = draggable;
-
-bool get draggable => _key.currentState!.draggable;
 
 void expand() => key.currentState.expand();
 

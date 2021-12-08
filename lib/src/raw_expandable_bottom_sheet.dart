@@ -39,10 +39,20 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// usually the content of your page. It is required for the [ExpandableBottomSheet].
   final Widget background;
 
+  @Deprecated(
+      ''' Your header widget should be part of `expandableContent`. Then you set the height of your header widget to `persistentContentHeight`.
+  This will be removed in version 2.0.0.
+  ''')
+
   /// [persistentHeader] is a Widget which is on top of the [expandableContent]
   /// and will never be hidden. It is made for a widget which indicates the
   /// user he can expand the content by dragging.
   final Widget? persistentHeader;
+
+  @Deprecated(
+      ''' The persistentFooter should not be part of the ExpandableBottomSheet. Rather define it outside of ExpandableBottomSheet.
+  This will be removed in version 2.0.0.
+  ''')
 
   /// [persistentFooter] is a widget which is always shown at the bottom. The [expandableContent]
   /// is if it is expanded on top of it so you don't need margin to see all of
@@ -79,8 +89,8 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// [enableToggle] will enable tap to toggle option on header.
   final bool enableToggle;
 
-  /// [draggable] will allow the user to drag the [ExpandableBottomSheet].
-  final bool draggable;
+  /// [isDraggable] will make the [ExpandableBottomSheet] draggable by the user or not.
+  final bool isDraggable;
 
   /// Creates the [ExpandableBottomSheet].
   ///
@@ -99,7 +109,7 @@ class ExpandableBottomSheet extends StatefulWidget {
     this.onIsExtendedCallback,
     this.onIsContractedCallback,
     this.enableToggle = false,
-    this.draggable = true,
+    this.isDraggable = true,
   })  : assert(persistentContentHeight >= 0),
         super(key: key);
 
@@ -130,9 +140,6 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   bool _useDrag = true;
   bool _callCallbacks = false;
 
-  // Allows dragging the content of the widget.
-  late bool draggable;
-
   /// Expands the content of the widget.
   void expand() {
     _afterUpdateWidgetBuild(false);
@@ -158,7 +165,6 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
   @override
   void initState() {
     super.initState();
-    draggable = widget.draggable;
     _controller = AnimationController(
       vsync: this,
       lowerBound: 0.0,
@@ -200,9 +206,10 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                 },
                 child: GestureDetector(
                   onTap: _toggle,
-                  onVerticalDragDown: draggable ? _dragDown : (_) {},
-                  onVerticalDragUpdate: draggable ? _dragUpdate : (_) {},
-                  onVerticalDragEnd: draggable ? _dragEnd : (_) {},
+                  onVerticalDragDown: widget.isDraggable ? _dragDown : (_) {},
+                  onVerticalDragUpdate:
+                      widget.isDraggable ? _dragUpdate : (_) {},
+                  onVerticalDragEnd: widget.isDraggable ? _dragEnd : (_) {},
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[

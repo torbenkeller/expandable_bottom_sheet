@@ -171,13 +171,13 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
       upperBound: 1.0,
     );
     _controller.addStatusListener(_handleAnimationStatusUpdate);
-    WidgetsBinding.instance!
+    WidgetsBinding.instance
         .addPostFrameCallback((_) => _afterUpdateWidgetBuild(true));
   }
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!
+    WidgetsBinding.instance
         .addPostFrameCallback((_) => _afterUpdateWidgetBuild(false));
     return Column(
       mainAxisSize: MainAxisSize.max,

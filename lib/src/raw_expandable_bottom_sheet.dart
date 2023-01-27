@@ -92,6 +92,9 @@ class ExpandableBottomSheet extends StatefulWidget {
   /// [isDraggable] will make the [ExpandableBottomSheet] draggable by the user or not.
   final bool isDraggable;
 
+  /// [toggleOnTapAnywhere] will make the [ExpandableBottomSheet] open and closes with persistent header only
+  final bool toggleOnTapAnywhere;
+
   /// Creates the [ExpandableBottomSheet].
   ///
   /// [persistentContentHeight] has to be greater 0.
@@ -205,7 +208,7 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                   );
                 },
                 child: GestureDetector(
-                  onTap: _toggle,
+                  onTap: widget.toggleOnTapAnywhere ? _toggle : () {},
                   onVerticalDragDown: widget.isDraggable ? _dragDown : (_) {},
                   onVerticalDragUpdate:
                       widget.isDraggable ? _dragUpdate : (_) {},
@@ -213,9 +216,12 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Container(
-                          key: _headerKey,
-                          child: widget.persistentHeader ?? Container()),
+                      GestureDetector(
+                        onTap: _toggle,
+                        child: Container(
+                            key: _headerKey,
+                            child: widget.persistentHeader ?? Container()),
+                      ),
                       Container(
                         key: _contentKey,
                         child: widget.expandableContent,

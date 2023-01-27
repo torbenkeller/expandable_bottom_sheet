@@ -113,6 +113,7 @@ class ExpandableBottomSheet extends StatefulWidget {
     this.onIsContractedCallback,
     this.enableToggle = false,
     this.isDraggable = true,
+    this.toggleOnTapAnywhere = true,
   })  : assert(persistentContentHeight >= 0),
         super(key: key);
 
